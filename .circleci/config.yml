@@ -1,77 +1,39 @@
 version: 2.1
 
-jobs:
-  build:
-    docker:
-      - image: cimg/node:current
+orbs:
+  node: circleci/node@5.0.0
+
+commands:
+  setup:
     steps:
       - checkout
-
-      # Restore previous node package cache if there is one
-      - restore_cache:
-          key: node-{{ checksum "package-lock.json" }}
-
-      # Install or update packages
-      - run: npm ci
-
-      # Save cache
-      - save_cache:
-          key: node-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm
-
-      # Store project files for the next job
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project
-
-  test:
-    docker:
-      - image: cimg/node:current
-
+      - node/install-packages
+  config_test:
+    description: "test writing fake firebase service account creds & .env from Circle env vars"
     steps:
-      # Start with the initial build
-      - attach_workspace:
-          at: ~/
+      - run: ls -l | awk '{print $5, $9}'
+      - run: echo ${FAKE_ENV}
+      - run: echo ${FAKE_ENV} > ./.fake_env
+      - run: echo ${FAKE_ENV_JSON}
+      - run: echo ${FAKE_ENV_JSON} > ./.fake_env
+      - run: ls -l | awk '{print $5, $9}'
+  run_tests_test:
+    description: "ooo check; run tests, maybe"
+    steps:
+        - run: ls -l | awk '{print $5, $9}'
+        - run: npm run mocha
 
-      # Install Testmo CLI tool
-      - run: npm install --no-save @testmo/testmo-cli
-
-      # Optionally add a couple of fields such as the git hash and link to the build
-      - run:
-          command: |
-            npx testmo automation:resources:add-field --name git --type string \
-              --value ${CIRCLE_SHA1:0:7} --resources resources.json
-            npx testmo automation:resources:add-link --name build \
-              --url $CIRCLE_BUILD_URL --resources resources.json
-
-      # Run tests and report results to Testmo
-      - run:
-          command: |
-            npx testmo automation:run:submit \
-              --instance $TESTMO_URL \
-              --project-id 1 \
-              --name "Mocha test run" \
-              --source "unit-tests" \
-              --resources resources.json \
-              --results results/*.xml \
-              -- npm run mocha-junit # Note space after --
-
-      # Store test artifacts and results
-      - store_artifacts:
-          path: results
-          destination: test_results
-      - store_test_results:
-          path: results
+jobs:
+  circle_setup_test:
+    executor:
+      name: node/default
+      tag: '17.4.0'
+    steps:
+      - run: setup
+      - run: config_test
+      - run: run_tests_test
 
 workflows:
-  version: 2
-  full:
+  build_test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
-          context:
-            - testmo
+      - circle_setup_test
