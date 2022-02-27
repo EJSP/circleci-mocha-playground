@@ -4,10 +4,11 @@ orbs:
   node: circleci/node@5.0.0
 
 commands:
-  setup:
+  setup_1:
     steps:
       - checkout
       - node/install-packages
+
   config_test:
     description: "test writing fake firebase service account creds & .env from Circle env vars"
     steps:
@@ -29,7 +30,7 @@ jobs:
       name: node/default
       tag: '17.4.0'
     steps:
-      - run: setup
+      - run: setup_1
       - run: config_test
       - run: run_tests_test
 
