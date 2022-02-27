@@ -10,7 +10,7 @@ commands:
       - checkout
       - node/install-packages
 
-  config_test_1:
+  config_test:
     description: "test writing fake firebase service account creds from Circle env vars"
     steps:
       - run: ls -l | awk '{print $5, $9}'
@@ -18,17 +18,8 @@ commands:
       - run: echo $FAKE_ENV_JSON > ./fake_env.json
       - run: ls -l | awk '{print $5, $9}'
 
-  config_test_2:
-    description: "test writing fake firebase service account creds from Circle env vars"
-    steps:
-      - run: ls -l | awk '{print $5, $9}'
-      - run: echo $FAKE_ENV_JSON
-      - run: touch ./fake_env_file.json
-      - run: echo $FAKE_ENV_JSON >> ./fake_env_file.json
-      - run: ls -l | awk '{print $5, $9}'
-
-  run_tests_test:
-    description: "ooo check; run tests, maybe"
+  run_tests:
+    description: "check creds file exists, run tests"
     steps:
         - run: ls -l | awk '{print $5, $9}'
         - run: npm run mocha
@@ -40,9 +31,8 @@ jobs:
       tag: '17.4.0'
     steps:
       - setup_1
-      - config_test_1
-      - config_test_2
-      - run_tests_test
+      - config_test
+      - run_tests
 
 workflows:
   build_test:
