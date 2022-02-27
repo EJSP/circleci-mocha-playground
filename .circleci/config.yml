@@ -4,7 +4,7 @@ orbs:
   node: circleci/node@5.0.0
 
 commands:
-  setup:
+  setup_1:
     description: "checkout, install dependencies"
     steps:
       - checkout
@@ -35,12 +35,11 @@ commands:
 
 jobs:
   circle_setup_test:
-    working_directory: ~/.
     executor:
       name: node/default
       tag: '17.4.0'
     steps:
-      - setup
+      - setup_1
       - config_test_1
       - config_test_2
       - run_tests_test
