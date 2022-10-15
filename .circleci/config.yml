@@ -18,17 +18,17 @@ commands:
       - checkout
       - node/install-packages
   
-  setup_env:
-    # define env vars at runtime
-    steps:
-      - run: echo "<< pipeline.parameters.TEST_ENV >>"
-      - run: echo "<< pipeline.parameters.PAYLOAD >>"
-      - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
-      - run: |
-          echo 'export CIRCLE_BUILD_URL="$CIRCLE_BUILD_URL"'  >> "$BASH_ENV"
-          echo 'export CIRCLE_JOB="$CIRCLE_JOB"' >> "$BASH_ENV"
-          echo 'export CIRCLE_BRANCH="$CIRCLE_BRANCH"' >> "$BASH_ENV"
-          echo 'export TEST_ENV="<< pipeline.parameters.TEST_ENV >>"' >> "$BASH_ENV"
+  # setup_env:
+  #   # define env vars at runtime
+  #   steps:
+  #     - run: echo "<< pipeline.parameters.TEST_ENV >>"
+  #     - run: echo "<< pipeline.parameters.PAYLOAD >>"
+  #     - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
+  #     - run: |
+  #         echo 'export CIRCLE_BUILD_URL="$CIRCLE_BUILD_URL"'  >> "$BASH_ENV"
+  #         echo 'export CIRCLE_JOB="$CIRCLE_JOB"' >> "$BASH_ENV"
+  #         echo 'export CIRCLE_BRANCH="$CIRCLE_BRANCH"' >> "$BASH_ENV"
+  #         echo 'export TEST_ENV="<< pipeline.parameters.TEST_ENV >>"' >> "$BASH_ENV"
 
   config_test:
     description: "test writing fake firebase service account creds from Circle env vars"
@@ -49,13 +49,7 @@ commands:
       - run: |
           curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
           -H 'Content-type: application/json' \
-          -d '{
-            "TEST_ENV": "Example text",
-            "CIRCLE_BUILD_URL": "Example text",
-            "CIRCLE_JOB": "Example text",
-            "CIRCLE_BRANCH": "Example text",
-            "TEXT": "Example text"
-          }'
+          -d '{ "TEXT": "example text TEST_ENV=<< pipeline.parameters.TEST_ENV >>" }'
 
   # slack_2:
   #   description: "Test out the slack spambot, part 2"
@@ -85,17 +79,13 @@ commands:
       - run: |
           curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
           -H 'Content-type: application/json' \
-          -d '{
-            "TEST_ENV": "$TEST_ENV",
-            "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL",
-            "CIRCLE_JOB": "$CIRCLE_JOB",
-            "CIRCLE_BRANCH": $CIRCLE_BRANCH,
-            "TEXT": "example text 2"
-          }'
+          -d '{ "TEXT": "$TEXT" }'
 
 
 jobs:
   circle_config_test:
+    environment:
+      TEXT: TEST_ENV "<< pipeline.parameters.TEST_ENV >>" CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
     executor:
       name: node/default
       tag: '16.16.0'
@@ -105,7 +95,7 @@ jobs:
       # - run_tests
       # - run: echo $TEXT
       # - slack_1
-      - setup_env
+      # - setup_env
       - slack_1
       - slack_2
 
