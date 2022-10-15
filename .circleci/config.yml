@@ -4,21 +4,21 @@ parameters:
   TEST_ENV:
     type: string
     default: fake_test_env
-  CIRCLE_BUILD_URL:
-    type: string
-    default: ${CIRCLE_BUILD_URL}
-  CIRCLE_JOB:
-    type: string
-    default: ${CIRCLE_JOB}
-  CIRCLE_JOB2:
-    type: string
-    default: "${CIRCLE_JOB}"
-  CIRCLE_BRANCH:
-    type: string
-    default: ${CIRCLE_BRANCH}
+  # CIRCLE_BUILD_URL:
+  #   type: string
+  #   default: ${CIRCLE_BUILD_URL}
+  # CIRCLE_JOB:
+  #   type: string
+  #   default: ${CIRCLE_JOB}
+  # CIRCLE_JOB2:
+  #   type: string
+  #   default: "${CIRCLE_JOB}"
+  # CIRCLE_BRANCH:
+  #   type: string
+  #   default: ${CIRCLE_BRANCH}
   TEXT:
     type: string
-    default: CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
+    default: CIRCLE_JOB ${CIRCLE_JOB} CIRCLE_BRANCH ${CIRCLE_BRANCH} CIRCLE_BUILD_URL ${CIRCLE_BUILD_URL}
 
 orbs:
   node: circleci/node@5.0.0
@@ -64,14 +64,17 @@ commands:
   slack_1:
     description: "Test out the slack spambot, part 1"
     steps:
-      - run: source "$BASH_ENV"
-      - run: echo TEXT_VAR "$TEXT_VAR" TEXT_VAR2 "$TEXT_VAR2"
-      # - run: 
-      #     name: slack_1 test circle build vars pipeline params
-      #     command: |
-      #       curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
-      #       -H 'Content-type: application/json' \
-      #       -d '{ "TEXT": $TEXT_VAR, $TEXT_VAR2}'
+      - run: 
+          name: echo bash env vars from setup_env
+          command: |
+            source "$BASH_ENV"
+            echo TEXT_VAR "$TEXT_VAR" TEXT_VAR2 "$TEXT_VAR2"
+      - run: 
+          name: slack_1 circle build vars as bash env vars?
+          command: |
+            curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
+            -H 'Content-type: application/json' \
+            -d '{ "TEXT": $TEXT_VAR, $TEXT_VAR2}'
         
         # -d '{ "TEXT": "example slack_1 text, pipeline params: TEST_ENV << pipeline.parameters.TEST_ENV >> CIRCLE_JOB << pipeline.parameters.CIRCLE_JOB >> CIRCLE_JOB2 << pipeline.parameters.CIRCLE_JOB2 >>" }'
 
@@ -92,7 +95,7 @@ commands:
           command: |
               curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
               -H 'Content-type: application/json' \
-              -d '{ "TEXT": "example slack_2 text TEST_ENV << pipeline.parameters.TEST_ENV >>" }'
+              -d '{ "TEXT": "example slack_2 text TEST_ENV << pipeline.parameters.TEST_ENV >> TEXT pipeline param << pipeline.parameters.TEXT >>" }'
   # slack_3:
   #   description: "Test out the slack spambot, part 2 the 2nd"
   #   steps:
@@ -114,7 +117,7 @@ jobs:
       # - run_tests
       # - run: echo $TEXT
       # - slack_1
-      # - setup_env
+      - setup_env
       - slack_1
       - slack_2
 
