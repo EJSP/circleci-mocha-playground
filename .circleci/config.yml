@@ -80,7 +80,7 @@ jobs:
   circle_config_test:
     executor:
       name: node/default
-      tag: '16'
+      tag: '16.16.0'
     steps:
       - setup_1
       - config_test
