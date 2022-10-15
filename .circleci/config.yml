@@ -47,13 +47,14 @@ commands:
       - run:
           name: curl slack
           command: |
+            PAYLOAD=$('{"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT"}')
             CURL_SLACK=$(curl --request POST \
               --url "$TEST_WEBHOOK_NOTIF_URL" \
               --header "content-type: application/json" \
-              --data '{"branch":"main","parameters":{"triggering-pipeline-id":"<< pipeline.id >>"}}' \
-            | jq -r '.id'
+              --data '{"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT"}' \
             )
             echo $CURL_SLACK
+            echo $PAYLOAD
   
   # slack_2:
   #   description: "Test out the slack spambot, part 2 The Sequel"
