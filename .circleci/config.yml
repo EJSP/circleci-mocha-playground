@@ -44,13 +44,37 @@ commands:
 
   slack_2:
     steps:
+      - run: 
+          environment: 
+            TEXT2: ${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>
+            TEXT3: '{"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT2" }'
+            PAYLOAD: |
+              {
+                "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>",
+                "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL",
+                "CIRCLE_JOB": "$CIRCLE_JOB",
+                "CIRCLE_BRANCH": "$CIRCLE_BRANCH",
+                "TEXT": "$TEXT2"
+              }
+          command: |
+            echo TEXT2 "$TEXT2" TEXT3 "$TEXT3" PAYLOAD "$PAYLOAD"
+
       - run:
-          name: curl slack
+          name: test
           command: |
             PAYLOAD=$('{"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT"}')
+            echo $PAYLOAD
+      - run: |
+          curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
+          -H 'Content-type: application/json' \
+          -d '{"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT"}'
+
+      - run:
+          name: test
+          command: |
             CURL_SLACK=$(curl --request POST \
               --url "$TEST_WEBHOOK_NOTIF_URL" \
-              --header "content-type: application/json" \
+              --header "Content-type: application/json" \
               --data '{"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT"}' \
             )
             echo $CURL_SLACK
@@ -87,7 +111,7 @@ commands:
   #               "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL",
   #               "CIRCLE_JOB": "$CIRCLE_JOB",
   #               "CIRCLE_BRANCH": "$CIRCLE_BRANCH",
-  #               "TEXT": $TEXT
+  #               "TEXT": "$TEXT"
   #             }
   #         command: echo "$TEXT" "$PAYLOAD"
 
@@ -126,7 +150,7 @@ jobs:
       # - config_test
       # - run_tests
       # - run: echo $TEXT
-      # - slack_1
+      - slack_1
       - slack_2
 
 workflows:
