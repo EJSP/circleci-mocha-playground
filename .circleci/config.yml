@@ -28,13 +28,6 @@ commands:
   #       - run: ls -l | awk '{print $5, $9}'
   #       - run: npm run mocha
 
-  # setup_env:
-  #   # define env vars at runtime
-  #   steps:
-  #     - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
-  #     - run: echo export PAYLOAD_CONTEXT=\"BRANCH $CIRCLE_BRANCH CIRCLE_JOB $CIRCLE_JOB $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
-      # - run: echo export PAYLOAD_RESULT=\"BRANCH $CIRCLE_BRANCH CIRCLE_JOB $CIRCLE_JOB $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
-
   setup_env_vars:
     # define env vars at runtime
     steps:
@@ -70,7 +63,7 @@ commands:
       - run: 
           name: post payload.json to slack webhook url
           command: |
-            curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
+            curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL_fail
 
 jobs:
   circle_config_test: 
