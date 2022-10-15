@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+  TEST_ENV:
+    type: string
+    default: fake_test_env
+
 orbs:
   node: circleci/node@5.0.0
 
@@ -14,27 +19,76 @@ commands:
     description: "test writing fake firebase service account creds from Circle env vars"
     steps:
       - run: ls -l | awk '{print $5, $9}'
-      - run: echo $FAKE_ENV_JSON
       - run: echo $FAKE_ENV_JSON > ./fake_env.json
       - run: ls -l | awk '{print $5, $9}'
 
   run_tests:
-    description: "check creds file exists, run tests"
+    description: "see if creds file exists, run tests"
     steps:
         - run: ls -l | awk '{print $5, $9}'
         - run: npm run mocha
 
+  slack_1:
+    description: "Test out the slack spambot, part 1"
+    steps:
+      - run: |
+          curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
+          -H 'Content-type: application/json' \
+          -d '{
+            "TEST_ENV": "Example text",
+            "CIRCLE_BUILD_URL": "Example text",
+            "CIRCLE_JOB": "Example text",
+            "CIRCLE_BRANCH": "Example text",
+            "TEXT": "Example text"
+          }'
+  
+  slack_2:
+    description: "Test out the slack spambot, part 2 The Sequel"
+    steps:
+      - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
+      - run:
+          #name: Notify ir_pipeline_team_test_notifs Slack channel
+          name: "test-test-notifs-the-sequel on_fail message"
+          when: always #on_fail
+          command: |
+              curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
+              -H 'Content-type: application/json' \
+              -d '{
+                "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>",
+                "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}",
+                "CIRCLE_JOB": "${CIRCLE_JOB}",
+                "CIRCLE_BRANCH": "${CIRCLE_BRANCH}",
+                "TEXT": "${CIRCLE_JOB} failed on << pipeline.parameters.TEST_ENV >>"
+              }'
+      - run:
+          #name: Notify ir_pipeline_team_test_notifs Slack channel
+          name: "test-test-notifs-the-sequel on_success message"
+          when: always #on_success
+          command: |
+              curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
+              -H 'Content-type: application/json' \
+              -d '{
+                "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>",
+                "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}",
+                "CIRCLE_JOB": "${CIRCLE_JOB}",
+                "CIRCLE_BRANCH": "${CIRCLE_BRANCH}",
+                "TEXT": "${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>"
+              }'
+
+
 jobs:
-  circle_setup_test:
+  circle_config_test:
     executor:
       name: node/default
-      tag: '17.4.0'
+      tag: '16'
     steps:
       - setup_1
       - config_test
       - run_tests
+      - slack_1
+      - slack_2
 
 workflows:
   build_test:
     jobs:
-      - circle_setup_test
+      - circle_config_test
