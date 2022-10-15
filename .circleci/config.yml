@@ -25,7 +25,7 @@ orbs:
 
 commands:
   setup_1:
-    description: "checkout, install dependencies"
+    description: "checkout, install mocha test dependencies"
     steps:
       - checkout
       - node/install-packages
@@ -38,9 +38,10 @@ commands:
       - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
       - run: echo export TEXT_VAR=\"<< pipeline.parameters.TEXT >>\" >> "$BASH_ENV"
       - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
-      - run: echo export TEXT_VAR2=\"CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"\"
+      - run: echo export TEXT_VAR2=\"CIRCLE_JOB $CIRCLE_JOB CIRCLE_BRANCH $CIRCLE_BRANCH CIRCLE_BUILD_URL $CIRCLE_BUILD_URL\"
       - run: source "$BASH_ENV"
-      - run: echo TEXT_VAR "$TEXT_VAR" TEXT_VAR2 "$TEXT_VAR2"
+      - run: echo TEXT_VAR "$TEXT_VAR"
+      - run: echo TEXT_VAR2 "$TEXT_VAR2"
 
       # - run: |
       #     echo 'export CIRCLE_BUILD_URL="$CIRCLE_BUILD_URL"'  >> "$BASH_ENV"
