@@ -65,14 +65,16 @@ commands:
           name: "test-test-notifs-the-sequel on_success message"
           when: always #on_success
           command: |
+              TEXT=${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>
+              echo $TEXT
               curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
               -H 'Content-type: application/json' \
               -d '{
                 "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>",
-                "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}",
-                "CIRCLE_JOB": "${CIRCLE_JOB}",
-                "CIRCLE_BRANCH": "${CIRCLE_BRANCH}",
-                "TEXT": "${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>"
+                "CIRCLE_BUILD_URL": ${CIRCLE_BUILD_URL},
+                "CIRCLE_JOB": ${CIRCLE_JOB},
+                "CIRCLE_BRANCH": ${CIRCLE_BRANCH},
+                "TEXT": $TEXT
               }'
 
 
