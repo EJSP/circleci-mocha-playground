@@ -36,9 +36,9 @@ commands:
       - run: echo "<< pipeline.parameters.TEST_ENV >>"
       - run: echo "<< pipeline.parameters.TEXT >>"
       - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
-      - run: echo export TEXT_VAR="<< pipeline.parameters.TEXT >>" >> "$BASH_ENV"
-      - run: echo export TEST_ENV="<< pipeline.parameters.TEST_ENV >>" >> "$BASH_ENV"
-      - run: echo export TEXT_VAR2=CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
+      - run: echo export TEXT_VAR=\"<< pipeline.parameters.TEXT >>\" >> "$BASH_ENV"
+      - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
+      - run: echo export TEXT_VAR2=\"CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"\"
       - run: source "$BASH_ENV"
       - run: echo TEXT_VAR "$TEXT_VAR" TEXT_VAR2 "$TEXT_VAR2"
 
@@ -74,7 +74,7 @@ commands:
           command: |
             curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
             -H 'Content-type: application/json' \
-            -d '{ "TEXT": $TEXT_VAR, $TEXT_VAR2}'
+            -d '{"TEXT": $TEXT_VAR, $TEXT_VAR2}'
         
         # -d '{ "TEXT": "example slack_1 text, pipeline params: TEST_ENV << pipeline.parameters.TEST_ENV >> CIRCLE_JOB << pipeline.parameters.CIRCLE_JOB >> CIRCLE_JOB2 << pipeline.parameters.CIRCLE_JOB2 >>" }'
 
