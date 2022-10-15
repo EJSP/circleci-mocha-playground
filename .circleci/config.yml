@@ -20,7 +20,7 @@ commands:
   
   # setup_env:
   #   # define env vars at runtime
-  #   steps:
+  # steps:
   #     - run: echo "<< pipeline.parameters.TEST_ENV >>"
   #     - run: echo "<< pipeline.parameters.PAYLOAD >>"
   #     - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
@@ -76,10 +76,11 @@ commands:
   slack_2:
     description: "Test out the slack spambot, part 2 the 2nd"
     steps:
+      - run: echo "$TEXT"
       - run: |
           curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
           -H 'Content-type: application/json' \
-          -d '{ "TEXT": "$TEXT" }'
+          -d { "TEXT": "$TEXT" }
 
 
 jobs:
