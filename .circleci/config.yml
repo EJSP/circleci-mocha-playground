@@ -31,7 +31,7 @@ commands:
     # define env vars at runtime
     steps:
       - run: |
-          echo 'export PAYLOAD=$(('{"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT2" }')) >> "$BASH_ENV"
+          echo 'export PAYLOAD=$(({"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT2" })) >> "$BASH_ENV"
           source "$BASH_ENV"
           echo "$PAYLOAD"
 
