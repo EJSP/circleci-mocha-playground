@@ -82,7 +82,7 @@ commands:
           command: |
               curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
               -H 'Content-type: application/json' \
-              -d '{ "TEXT": "example slack_2 text TEST_ENV << pipeline.parameters.TEST_ENV >> " }'
+              -d '{ "TEXT": "example slack_2 text TEST_ENV << pipeline.parameters.TEST_ENV >> TEXT  << pipeline.parameters.TEXT >>" }'
   # slack_3:
   #   description: "Test out the slack spambot, part 2 the 2nd"
   #   steps:
