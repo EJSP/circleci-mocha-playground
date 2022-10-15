@@ -9,24 +9,24 @@ orbs:
   node: circleci/node@5.0.0
 
 commands:
-  # setup_1:
-  #   description: "checkout, install mocha test dependencies"
-  #   steps:
-  #     - checkout
-  #     - node/install-packages
+  setup_1:
+    description: "checkout, install mocha test dependencies"
+    steps:
+      - checkout
+      - node/install-packages
   
-  # test_configs_test:
-  #   description: "test writing fake firebase service account creds from Circle env vars"
-  #   steps:
-  #     - run: ls -l | awk '{print $5, $9}'
-  #     - run: echo $FAKE_ENV_JSON > ./fake_env.json
-  #     - run: ls -l | awk '{print $5, $9}'
+  test_configs_test:
+    description: "test writing fake firebase service account creds from Circle env vars"
+    steps:
+      - run: ls -l | awk '{print $5, $9}'
+      - run: echo $FAKE_ENV_JSON > ./fake_env.json
+      - run: ls -l | awk '{print $5, $9}'
 
-  # run_tests:
-  #   description: "see if creds file exists, run tests"
-  #   steps:
-  #       - run: ls -l | awk '{print $5, $9}'
-  #       - run: npm run mocha
+  run_tests:
+    description: "see if creds file exists, run tests"
+    steps:
+        - run: ls -l | awk '{print $5, $9}'
+        - run: npm run mocha
 
   setup_env_vars:
     # define env vars at runtime
@@ -63,7 +63,7 @@ commands:
       - run: 
           name: post payload.json to slack webhook url
           command: |
-            curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL_fail
+            curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
 
 jobs:
   circle_config_test: 
