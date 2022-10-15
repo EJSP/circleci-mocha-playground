@@ -41,13 +41,25 @@ commands:
             "CIRCLE_BRANCH": "Example text",
             "TEXT": "Example text"
           }'
+
+  slack_2:
+    steps:
+      - run:
+          name: curl slack
+          command: |
+            CURL_SLACK=$(curl --request POST \
+              --url "$TEST_WEBHOOK_NOTIF_URL" \
+              --header "content-type: application/json" \
+              --data '{"branch":"main","parameters":{"triggering-pipeline-id":"<< pipeline.id >>"}}' \
+            | jq -r '.id'
+            )
+            echo $CURL_SLACK
   
   # slack_2:
   #   description: "Test out the slack spambot, part 2 The Sequel"
   #   environment:
   #     TEXT: ${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>
   #     PAYLOAD: '{ "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT" }'
-
   #   steps:
   #     - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
   #     - run:
@@ -109,78 +121,14 @@ jobs:
       name: node/default
       tag: '16.16.0'
     steps:
-      - setup_1
-      - config_test
-      - run_tests
-      - run: echo $TEXT
-      - slack_1
-      #- slack_2
-  slack_2:
-    executor:
-      name: node/default
-      tag: '16.16.0'
-    description: "Test out the slack spambot, part 2 The Sequel"
-    environment:
-      TEXT: ${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>
-      PAYLOAD: '{ "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "${CIRCLE_BUILD_URL}", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT" }'
-    steps:
-      - run: echo CIRCLE_JOB "${CIRCLE_JOB}" CIRCLE_BRANCH "${CIRCLE_BRANCH}" CIRCLE_BUILD_URL "${CIRCLE_BUILD_URL}"
-      - run:
-          #name: Notify ir_pipeline_team_test_notifs Slack channel
-          name: "test-test-notifs-the-sequel on_fail message"
-          when: always #on_fail
-          command: |
-              curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
-              -H 'Content-type: application/json' \
-              -d {
-                "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>",
-                "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL",
-                "CIRCLE_JOB": "$CIRCLE_JOB",
-                "CIRCLE_BRANCH": $CIRCLE_BRANCH,
-                "TEXT": $CIRCLE_JOB failed on << pipeline.parameters.TEST_ENV >>
-              }
-
-      - run: 
-          environment: 
-            TEXT: ${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>
-            PAYLOAD: |
-              {
-                "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>",
-                "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL",
-                "CIRCLE_JOB": "$CIRCLE_JOB",
-                "CIRCLE_BRANCH": "$CIRCLE_BRANCH",
-                "TEXT": $TEXT
-              }
-          command: echo "$TEXT" "$PAYLOAD"
-
-      - run:
-          #name: Notify ir_pipeline_team_test_notifs Slack channel
-          name: "test-test-notifs-the-sequel on_success message"
-          when: always #on_success
-          environment:
-            TEXT: ${CIRCLE_JOB} passed on << pipeline.parameters.TEST_ENV >>
-          command: |
-              curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
-              -H 'Content-type: application/json' \
-              -d '{
-                "TEST_ENV": "<< pipeline.parameters.TEST_ENV >>",
-                "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL",
-                "CIRCLE_JOB": "$CIRCLE_JOB",
-                "CIRCLE_BRANCH": $CIRCLE_BRANCH,
-                "TEXT": "$TEXT"
-              }'
-      - run:
-          #name: Notify ir_pipeline_team_test_notifs Slack channel
-          name: "test-test-notifs-the-sequel on_success message 2"
-          when: always #on_success
-          command: |
-              curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
-              -H 'Content-type: application/json' \
-              -d "$PAYLOAD"
-
+      # - setup_1
+      # - config_test
+      # - run_tests
+      # - run: echo $TEXT
+      # - slack_1
+      - slack_2
 
 workflows:
   build_test:
     jobs:
       - circle_config_test
-      - slack_2
