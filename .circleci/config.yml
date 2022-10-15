@@ -37,12 +37,12 @@ commands:
           name: test on_success message
           when: on_success
           command: |
-            echo export PAYLOAD_RESULT=\":white_check_mark: PASSED: Circle job $CIRCLE_JOB on branch $CIRCLE_BRANCH. \ $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+            echo export PAYLOAD_RESULT=\":white_check_mark: PASSED \" >> "$BASH_ENV"
       - run:
           name: test on_fail message
           when: on_fail
           command: |
-            echo export PAYLOAD_RESULT=\":eyes: FAILED: Circle job $CIRCLE_JOB on branch $CIRCLE_BRANCH. \ $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+            echo export PAYLOAD_RESULT=\":eyes: FAILED \" >> "$BASH_ENV"
 
   slack_setup:
     steps:
