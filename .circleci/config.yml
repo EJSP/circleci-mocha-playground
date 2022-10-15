@@ -32,12 +32,12 @@ commands:
     # define env vars at runtime
     steps:
       - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
-      - run: echo export PAYLOAD_CONTEXT=\"Job [$CIRCLE_JOB] on branch [$CIRCLE_BRANCH] \ $CIRCLE_BUILD_URL \" >> "$BASH_ENV"
+      - run: echo export PAYLOAD_CONTEXT=\"$CIRCLE_JOB on $CIRCLE_BRANCH \ $CIRCLE_BUILD_URL \" >> "$BASH_ENV"
       - run:
           name: test on_success message
           when: on_success
           command: |
-            echo export PAYLOAD_RESULT=\":white_check_mark: PASSED \" >> "$BASH_ENV"
+            echo export PAYLOAD_RESULT=\":white_check_mark: Passed \" >> "$BASH_ENV"
       - run:
           name: test on_fail message
           when: on_fail
