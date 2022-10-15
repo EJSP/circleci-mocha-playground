@@ -28,13 +28,12 @@ commands:
       - node/install-packages
   
   setup_env:
+    # define env vars at runtime
     steps:
       - run: |
-          name: define env vars at runtime
-          command: |
-            echo 'export PAYLOAD={"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT2" }' >> "$BASH_ENV"
-            source "$BASH_ENV"
-            echo "$PAYLOAD"
+          echo 'export PAYLOAD={"TEST_ENV": "<< pipeline.parameters.TEST_ENV >>", "CIRCLE_BUILD_URL": "$CIRCLE_BUILD_URL", "CIRCLE_JOB": "$CIRCLE_JOB", "CIRCLE_BRANCH": "$CIRCLE_BRANCH", "TEXT": "$TEXT2" }' >> "$BASH_ENV"
+          source "$BASH_ENV"
+          echo "$PAYLOAD"
 
   config_test:
     description: "test writing fake firebase service account creds from Circle env vars"
