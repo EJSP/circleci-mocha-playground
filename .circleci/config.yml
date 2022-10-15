@@ -28,21 +28,37 @@ commands:
         - run: ls -l | awk '{print $5, $9}'
         - run: npm run mocha
 
+  # setup_env_vars:
+  #   # define env vars at runtime
+  #   steps:
+  #     - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
+  #     - run: echo export PAYLOAD_CONTEXT=\"Job $CIRCLE_JOB on branch $CIRCLE_BRANCH | $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+  #     - run:
+  #         name: test on_success message
+  #         when: on_success
+  #         command: |
+  #           echo export PAYLOAD_RESULT=\":white_check_mark: Passed\" >> "$BASH_ENV"
+  #     - run:
+  #         name: test on_fail message
+  #         when: on_fail
+  #         command: |
+  #           echo export PAYLOAD_RESULT=\":eyes: FAILED \" >> "$BASH_ENV"
   setup_env_vars:
     # define env vars at runtime
     steps:
       - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
-      - run: echo export PAYLOAD_CONTEXT=\"Job $CIRCLE_JOB on branch $CIRCLE_BRANCH | $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+      - run: echo export PAYLOAD_CONTEXT=\"$CIRCLE_JOB on $CIRCLE_BRANCH \ $CIRCLE_BUILD_URL \" >> "$BASH_ENV"
       - run:
           name: test on_success message
           when: on_success
           command: |
-            echo export PAYLOAD_RESULT=\":white_check_mark: Passed\" >> "$BASH_ENV"
+            echo export PAYLOAD_RESULT=\":white_check_mark: Passed \" >> "$BASH_ENV"
       - run:
           name: test on_fail message
           when: on_fail
           command: |
             echo export PAYLOAD_RESULT=\":eyes: FAILED \" >> "$BASH_ENV"
+
 
   slack_setup:
     steps:
