@@ -56,37 +56,40 @@ commands:
         - run: ls -l | awk '{print $5, $9}'
         - run: npm run mocha
 
-  slack_1:
-    description: "Test out the slack spambot, part 1"
+  slack_setup:
     steps:
       - run: 
-          name: echo bash env vars from setup_env
+          name: echo bash env vars from setup_env into slack payload format in ./payload.json
           command: |
             source "$BASH_ENV"
             echo TEXT_VAR "$TEXT_VAR"
             echo TEXT_VAR2 "$TEXT_VAR2"
             echo TEST_ENV_VAR "$TEST_ENV_VAR"
-      - run: 
-          name: slack_1 circle build vars as bash env var $TEXT_VAR2 ?
-          command: |
-            curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
-            -H 'Content-type: application/json' \
-            -d '{"TEXT": "$TEXT_VAR2"}'
-        
-        # -d '{ "TEXT": "example slack_1 text, pipeline params: TEST_ENV << pipeline.parameters.TEST_ENV >> CIRCLE_JOB << pipeline.parameters.CIRCLE_JOB >> CIRCLE_JOB2 << pipeline.parameters.CIRCLE_JOB2 >>" }'
+            echo '{"TEXT": "'"$TEXT_VAR2"'", "TEST_ENV": "'"$TEST_ENV_VAR"'"}'
+            echo '{"TEXT": "'"$TEXT_VAR2"'", "TEST_ENV": "'"$TEST_ENV_VAR"'"}' > payload.json
 
-  slack_2:
-    description: "Test out the slack spambot, part 2"
+  slack_post:
     steps:
-      - run: echo 'example slack_2 text TEST_ENV_VAR $TEST_ENV_VAR TEXT_VAR2 $TEXT_VAR2'
       - run:
-  #         #name: Notify ir_pipeline_team_test_notifs Slack channel
-          name: slack_2 -d TEXT as "example slack_2 text TEST_ENV_VAR $TEST_ENV_VAR TEXT_VAR2 $TEXT_VAR2"
-          when: always #on_success
+          name: what's in Mystery Payload File 3000
+          command: cat payload.json
+      - run: 
+          name: post payload.json to slack webhook url
           command: |
-              curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
-              -H 'Content-type: application/json' \
-              -d '{ "TEXT": "example slack_2 text TEST_ENV_VAR $TEST_ENV_VAR TEXT_VAR2 $TEXT_VAR2" }'
+            curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
+
+  # slack_2:
+  #   description: "Test out the slack spambot, part 2"
+  #   steps:
+  #     - run: echo 'example slack_2 text TEST_ENV_VAR $TEST_ENV_VAR TEXT_VAR2 $TEXT_VAR2'
+  #     - run:
+  # #         #name: Notify ir_pipeline_team_test_notifs Slack channel
+  #         name: slack_2 -d TEXT as "example slack_2 text TEST_ENV_VAR $TEST_ENV_VAR TEXT_VAR2 $TEXT_VAR2"
+  #         when: always #on_success
+  #         command: |
+  #             curl -X POST "$TEST_WEBHOOK_NOTIF_URL" \
+  #             -H 'Content-type: application/json' \
+  #             -d '{ "TEXT": "example slack_2 text TEST_ENV_VAR $TEST_ENV_VAR TEXT_VAR2 $TEXT_VAR2" }'
   # slack_3:
   #   description: "Test out the slack spambot, part 2 the 2nd"
   #   steps:
@@ -109,8 +112,8 @@ jobs:
       # - run: echo $TEXT
       # - slack_1
       - setup_env
-      - slack_1
-      - slack_2
+      - slack_setup
+      - slack_post
 
 workflows:
   build_test:
