@@ -84,23 +84,22 @@ commands:
   spam_slack:
     steps:
       - run:
-          name: temp - Set up Slack payload with test job context
+          name: Export test job result to BASH_ENV
+          when: on_success
+          command: |
+            echo export RESULT=\":heavy_check_mark: Passed\" >> "$BASH_ENV"
+      - run:
+          name: Export test job result to BASH_ENV
+          when: on_fail
+          command: |
+            echo export RESULT=\":eyes: Failed\" >> "$BASH_ENV"
+      - run:
+          name: Set up Slack payload with test job context
           when: always
           command: |
-            RESULT="Passed"
-            echo $RESULT
+            echo export CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+            source "$BASH_ENV"
             echo '{"TEST_ENV": "'"$TEST_ENV"'", "RESULT": "'"$RESULT"'", "CONTEXT": "'"$CONTEXT"'"}' > payload.json
-      # - run:
-        # CONTEXT="$RESULT" on "$TEST_ENV": "$CIRCLE_JOB" on "$CIRCLE_BRANCH" "$CIRCLE_BUILD_URL"
-      #     name: temp - Set up Slack payload with test job context
-      #     when: on_fail
-      #     command: |
-      #       RESULT="Failed"
-      #       CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
-      #       source $BASH_ENV
-      #       echo $RESULT
-      #       echo $CONTEXT
-      #       echo export CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
       - run:
           name: Post to Slack
           when: always
