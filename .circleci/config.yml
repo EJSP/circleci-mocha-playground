@@ -116,7 +116,7 @@ jobs:
       tag: '16.16.0'
     steps:
       - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
-      - run: spam_slack
+      - spam_slack
       # - setup_env_vars
       # - slack_setup
       # - slack_post
