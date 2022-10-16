@@ -88,11 +88,10 @@ commands:
           when: always
           command: |
             RESULT="Passed"
-            CONTEXT="$RESULT" on "$TEST_ENV": "$CIRCLE_JOB" on "$CIRCLE_BRANCH" "$CIRCLE_BUILD_URL"
             echo $RESULT
-            echo $CONTEXT
             echo '{"TEST_ENV": "'"$TEST_ENV"'", "RESULT": "'"$RESULT"'", "CONTEXT": "'"$CONTEXT"'"}' > payload.json
       # - run:
+        # CONTEXT="$RESULT" on "$TEST_ENV": "$CIRCLE_JOB" on "$CIRCLE_BRANCH" "$CIRCLE_BUILD_URL"
       #     name: temp - Set up Slack payload with test job context
       #     when: on_fail
       #     command: |
