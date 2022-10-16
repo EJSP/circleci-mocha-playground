@@ -85,24 +85,23 @@ commands:
     steps:
       - run:
           name: temp - Set up Slack payload with test job context
-          when: on_success
+          when: always
           command: |
             RESULT="Passed"
-            CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
-            source $BASH_ENV
+            CONTEXT="$RESULT" on "$TEST_ENV": "$CIRCLE_JOB" on "$CIRCLE_BRANCH" "$CIRCLE_BUILD_URL"
             echo $RESULT
             echo $CONTEXT
             echo '{"TEST_ENV": "'"$TEST_ENV"'", "RESULT": "'"$RESULT"'", "CONTEXT": "'"$CONTEXT"'"}' > payload.json
-      - run:
-          name: temp - Set up Slack payload with test job context
-          when: on_fail
-          command: |
-            RESULT="Failed"
-            CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
-            source $BASH_ENV
-            echo $RESULT
-            echo $CONTEXT
-            echo export CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+      # - run:
+      #     name: temp - Set up Slack payload with test job context
+      #     when: on_fail
+      #     command: |
+      #       RESULT="Failed"
+      #       CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+      #       source $BASH_ENV
+      #       echo $RESULT
+      #       echo $CONTEXT
+      #       echo export CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
       - run:
           name: Post to Slack
           when: always
