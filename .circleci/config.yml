@@ -142,7 +142,6 @@ commands:
               curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
             else
               cat payload.json
-              # curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
             fi
 
       # - run:
