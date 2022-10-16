@@ -106,6 +106,43 @@ commands:
           command: |
             curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
 
+  slack_setup:
+    steps:
+      - run:
+          name: Export test job result to BASH_ENV
+          when: on_success
+          command: |
+            echo export RESULT=\":heavy_check_mark: Passed\" >> "$BASH_ENV"
+      - run:
+          name: Export test job result to BASH_ENV
+          when: on_fail
+          command: |
+            echo export RESULT=\":eyes: Failed\" >> "$BASH_ENV"
+      - run:
+          name: Set up Slack payload with test job context
+          when: always
+          command: |
+            echo export CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+            source "$BASH_ENV"
+            echo '{"TEST_ENV": "'"$TEST_ENV"'", "RESULT": "'"$RESULT"'", "CONTEXT": "'"$CONTEXT"'"}' > payload.json
+      # - run:
+      #     name: Post to Slack
+      #     when: always
+      #     command: |
+      #       curl -X POST -H 'Content-type: application/json' --data @payload.json $SLACK_URL
+
+  slack_post:
+    steps:
+      - run:
+          name: temp test # Post to Slack $SLACK_URL_ON_PROD_FAIL with prod fail notif IF fail AND production, else quieter notif to $SLACK_URL
+          when: always
+          command: |
+            if [ "$TEST_ENV" != "production" ] && [ "Failed" =~ "$RESULT" ]; then
+              curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
+            else
+              curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
+            fi
+
       # - run:
       #     when: on_success
       #     command: |
@@ -139,7 +176,8 @@ jobs:
       tag: '16.16.0'
     steps:
       - run: echo export TEST_ENV=\"<< pipeline.parameters.TEST_ENV >>\" >> "$BASH_ENV"
-      - spam_slack
+      - slack_setup
+      - slack_post
       # - setup_env_vars
       # - slack_setup
       # - slack_post
