@@ -140,7 +140,7 @@ commands:
             if [ "$TEST_ENV" != "production" ] && [[ "$RESULT" == *(Passed) ]]; then
               curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
             else
-              cat payload.json
+              echo 'else condition'
             fi
 
       # - run:
