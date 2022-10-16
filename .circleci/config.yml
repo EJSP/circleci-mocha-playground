@@ -134,14 +134,16 @@ commands:
   slack_post:
     steps:
       - run:
-          name: temp test # Post to Slack $SLACK_URL_ON_PROD_FAIL with prod fail notif IF fail AND production, else quieter notif to $SLACK_URL
+          name: temp test (conditions reversed to test)
           when: always
           command: |
-            if [ "$TEST_ENV" != "production" ] && [[ "$RESULT" != *Failed ]]; then
-              curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
+            if [[ "$RESULT" != *Failed && ("$TEST_ENV" == "production" || << pipeline.trigger_source >> != "scheduled_run") ]]; then
+              echo pipeline.trigger_source="<< pipeline.trigger_source >>"
+              curl -X POST -H 'Content-type: application/json' --data @payload.json "$SLACK_URL_LOUD"
             else
-              echo 'else condition'
+              curl -X POST -H 'Content-type: application/json' --data @payload.json "$SLACK_URL"
             fi
+              
 
       # - run:
       #     when: on_success
