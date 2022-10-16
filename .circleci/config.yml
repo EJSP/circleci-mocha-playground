@@ -87,7 +87,7 @@ commands:
           name: temp - Set up Slack payload with test job context
           when: on_success
           command: |
-            RESULT=\" :heavy_check_mark: Passed \"
+            RESULT="Passed"
             echo $RESULT
             CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
             echo $CONTEXT
@@ -96,7 +96,7 @@ commands:
           name: temp - Set up Slack payload with test job context
           when: on_fail
           command: |
-            RESULT=\" :eyes: Failed \"
+            RESULT="Failed"
             echo $RESULT
             CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
             echo $CONTEXT
