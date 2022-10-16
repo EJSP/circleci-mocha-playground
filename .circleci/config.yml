@@ -134,13 +134,13 @@ commands:
   slack_post:
     steps:
       - run:
-          name: temp test (conditions reversed to test; no double url scheme like in the real repo)
+          name: temp test (no double url scheme like in the real repo)
           when: always
           command: |
-            if [[ "$RESULT" != *Failed && ("$TEST_ENV" == "production" || << pipeline.trigger_source >> != "scheduled_run") ]]; then
-              echo pipeline.trigger_source="<< pipeline.trigger_source >>"
+            if [[ "$RESULT" == *Failed && ("$TEST_ENV" == "production" || << pipeline.trigger_source >> == "scheduled_run") ]]; then
               curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
             else
+              echo 'else condition'
               curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
             fi
               
