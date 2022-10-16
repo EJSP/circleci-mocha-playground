@@ -88,8 +88,9 @@ commands:
           when: on_success
           command: |
             RESULT="Passed"
-            echo $RESULT
             CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+            source $BASH_ENV
+            echo $RESULT
             echo $CONTEXT
             echo '{"TEST_ENV": "'"$TEST_ENV"'", "RESULT": "'"$RESULT"'", "CONTEXT": "'"$CONTEXT"'"}' > payload.json
       - run:
@@ -97,8 +98,9 @@ commands:
           when: on_fail
           command: |
             RESULT="Failed"
-            echo $RESULT
             CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
+            source $BASH_ENV
+            echo $RESULT
             echo $CONTEXT
             echo export CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
       - run:
