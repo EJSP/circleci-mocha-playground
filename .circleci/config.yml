@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   TEST_ENV:
     type: string
-    default: fake_test_env
+    default: fake_env
 
 orbs:
   node: circleci/node@5.0.0
@@ -95,7 +95,7 @@ commands:
           when: always
           command: |
             source "$BASH_ENV"
-            echo export CONTEXT=\"$RESULT on $TEST_ENV - $CIRCLE_JOB - $CIRCLE_BRANCH - $CIRCLE_BUILD_URL \" >> "$BASH_ENV"
+            echo export CONTEXT=\"$RESULT on $TEST_ENV: $CIRCLE_JOB on $CIRCLE_BRANCH $CIRCLE_BUILD_URL\" >> "$BASH_ENV"
       - run:
           name: Write Slack payload to file
           when: always
