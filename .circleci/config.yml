@@ -137,7 +137,7 @@ commands:
           name: temp test # Post to Slack $SLACK_URL_ON_PROD_FAIL with prod fail notif IF fail AND production, else quieter notif to $SLACK_URL
           when: always
           command: |
-            if [ "$TEST_ENV" != "production" ] && [[ "$RESULT" != *(Failed) ]]; then
+            if [ "$TEST_ENV" != "production" ] && [[ "$RESULT" == *(Passed) ]]; then
               curl -X POST -H 'Content-type: application/json' --data @payload.json $TEST_WEBHOOK_NOTIF_URL
             else
               cat payload.json
